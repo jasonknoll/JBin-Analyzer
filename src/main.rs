@@ -1,3 +1,5 @@
+use std::env;
+
 use std::fs;
 use std::path::Path;
 
@@ -12,9 +14,17 @@ fn main() {
     - Add a console GUI
     */
 
-    // Get basic attributes
-    let file_path = Path::new("Cargo.toml");
+    let args: Vec<String> = env::args().collect();
 
+    println!("{:?}", args);
+
+    // If file path is provided, great.
+    // If not, wait and then ask to set it in-app.
+    let mut file_path: Option<&Path> = None;
+
+    // check for argument
+
+    // Get basic attributes
     match fs::metadata(&file_path) {
         Ok(metadata) => {
             let size = metadata.len();
