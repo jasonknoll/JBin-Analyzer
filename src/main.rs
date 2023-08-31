@@ -5,7 +5,7 @@ use std::path::Path;
 
 fn main() {
     /* TODO
-    - [ ] Import file to be analyzed
+    - [~] Import file to be analyzed
     - [ ] Grab attribute data off of it
       [ ]   + Size, creation date, etc.
     - [ ] Hash/calculate checksum and save somewhere (idk)
