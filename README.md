@@ -1,10 +1,6 @@
 # JBin - Binary Analysis
-I would like to make a tool which can analyze binaries and determine if it contains malware-like behavior.
+CLI tool to analyze data from binary executables
 
-## Features TODO
-- File info display: contains basic attributes of the file
-- Hashing and checksum calculations
-- String extraction
-- PE header parsing
-- Disassembly
-- Should function similar to nmap or netcat just displaying info in terminal
+## Usage
+`jbin -p <path>` - get basic information about a file
+`-H` - return the file's checksum
