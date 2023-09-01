@@ -79,3 +79,5 @@ fn hash_file(path: &Path) {
     let hash = sha256::digest(&bytes);
     println!("Hash: {}", hash);
 }
+
+// TODO - Extract strings and list them
