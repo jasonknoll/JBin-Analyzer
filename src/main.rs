@@ -14,7 +14,7 @@ struct Arguments {
     #[argh(option, short = 'p')]
     path: String,
 
-    /// flag to set the program to display the file's hash checksum
+    /// flag to display the file's hash checksum
     #[argh(switch, short = 'H')]
     hash: bool,
 
