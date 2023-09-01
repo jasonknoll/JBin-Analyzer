@@ -7,4 +7,4 @@ I would like to make a tool which can analyze binaries and determine if it conta
 - String extraction
 - PE header parsing
 - Disassembly
-- All in a decent looking console-based gui
+- Should function similar to nmap or netcat just displaying info in terminal
