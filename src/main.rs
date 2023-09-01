@@ -23,6 +23,8 @@ struct Arguments {
     strings: bool,
 }
 
+const STRING_OUTPUT_PATH_DEFAULT: &str = "string_output.txt";
+
 fn main() {
     /* TODO
     - [x] Import file to be analyzed
@@ -104,8 +106,7 @@ fn get_strings(path: &Path) {
 
     println!("---Strings found in file---");
 
-    let output_file = "strings.txt";
-    match fs::write(output_file, filtered_strings.to_string()) {
+    match fs::write(STRING_OUTPUT_PATH_DEFAULT, filtered_strings.to_string()) {
         Ok(something) => println!("output file created"),
         Err(e) => println!("error"),
     }
