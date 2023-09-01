@@ -1,4 +1,4 @@
-# JBinaryAnalysis
+# JBin - Binary Analysis
 I would like to make a tool which can analyze binaries and determine if it contains malware-like behavior.
 
 ## Features TODO

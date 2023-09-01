@@ -1,4 +1,3 @@
-use std::ffi::OsStr;
 use std::fs;
 use std::path::Path;
 
@@ -57,7 +56,11 @@ fn get_file_metadata(path: &Path) {
             let modified_date = metadata.modified().unwrap();
             let modified_date_time: DateTime<Local> = modified_date.into();
 
-            let file_type = path.extension().and_then(OsStr::to_str).unwrap();
+            // TODO - figure out how to read linux executables
+            let file_type = match path.extension().and_then(|ext| ext.to_str()) {
+                Some(ext) => ext,
+                None => "unknown file type",
+            };
 
             println!("Size: {} bytes", size);
             println!("Created: {}", create_date_time.format("%d/%m/%Y %X"));
