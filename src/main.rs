@@ -1,50 +1,48 @@
-use std::env;
-
 use std::fs;
 use std::path::Path;
 
+use argh::FromArgs;
+
+use chrono::{offset::Local, DateTime};
+
+use sha256;
+
+#[derive(FromArgs, Debug)]
+/// JBin - Binary Analysis Tool
+struct Arguments {
+    /// path for the file to be analyzed
+    #[argh(option, short = 'p')]
+    path: String,
+
+    /// flag to set the program to display the file's hash checksum
+    #[argh(switch, short = 'H')]
+    hash: bool,
+}
+
 fn main() {
     /* TODO
-    - [~] Import file to be analyzed
-    - [ ] Grab attribute data off of it
-      [ ]   + Size, creation date, etc.
-    - [ ] Hash/calculate checksum and save somewhere (idk)
+    - [x] Import file to be analyzed
+    - [x] Grab attribute data off of it
+      [x]   + Size, creation date, etc.
+    - [~] Hash/calculate checksum and save somewhere (idk)
     - [ ] Extract available strings
     - [ ] Find out how to disassemble an exe lol
     - [ ] Add a console GUI
     */
 
-    let args: Vec<String> = env::args().collect();
+    let args: Arguments = argh::from_env();
 
-    // If file path is provided, great.
-    // If not, wait and then ask to set it in-app.
-    let mut file_path: Option<&Path>;
-
-    // check for argument
-    file_path = match args.len() {
-        2 => Some(get_file_path_from_string(&args[1])),
-        _ => None,
-    };
-
-    // Get basic attributes
-    match file_path {
-        None => get_file_path_from_user(),
-        _ => get_file_metadata(&file_path.unwrap()),
+    if args.path.is_empty() {
+        eprintln!("Error: file path not provided! Use '-p' to enter in the path");
+        std::process::exit(-1);
     }
-}
 
-fn get_file_path_from_string(path: &String) -> &Path {
-    return Path::new(path);
-}
+    let file_path = Path::new(&args.path);
+    get_file_metadata(file_path);
 
-fn get_file_path_from_user() -> () {
-    // User input??
-    let mut path = String::new();
-    println!("No file path detected, please enter file path");
-    print!(">");
-    std::io::stdin().read_line(&mut path).unwrap();
-    let p = get_file_path_from_string(&path);
-    get_file_metadata(p);
+    if args.hash == true {
+        hash_file(file_path);
+    }
 }
 
 fn get_file_metadata(path: &Path) {
@@ -52,17 +50,31 @@ fn get_file_metadata(path: &Path) {
         Ok(metadata) => {
             let size = metadata.len();
 
-            // Figure out how to format date correctly
             let create_date = metadata.created().unwrap();
+            let create_date_time: DateTime<Local> = create_date.into();
 
-            let idk = metadata.file_type();
+            let modified_date = metadata.modified().unwrap();
+            let modified_date_time: DateTime<Local> = modified_date.into();
+
+            let file_type = metadata.file_type();
 
             println!("Size: {} bytes", size);
-            println!("Created: {:?}", create_date);
-            println!("System type: {:?}", idk);
+            println!("Created: {}", create_date_time.format("%d/%m/%Y %X"));
+            println!(
+                "Last modified: {}",
+                modified_date_time.format("%d/%m/%Y %X")
+            );
+            println!("File type: {:?}", file_type);
         }
         Err(e) => {
             println!("Error: {}", e);
         }
     }
+}
+
+// TODO - Find more things to do with the hash (compare to older versions or something)
+fn hash_file(path: &Path) {
+    let bytes = fs::read(path).unwrap();
+    let hash = sha256::digest(&bytes);
+    println!("Hash: {}", hash);
 }
