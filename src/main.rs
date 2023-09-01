@@ -18,7 +18,7 @@ fn main() {
 
     // If file path is provided, great.
     // If not, wait and then ask to set it in-app.
-    let mut file_path: Option<&Path> = None;
+    let mut file_path: Option<&Path>;
 
     // check for argument
     file_path = match args.len() {
@@ -28,7 +28,7 @@ fn main() {
 
     // Get basic attributes
     match file_path {
-        None => println!("No file path detected. Probably should create function to get file"),
+        None => get_file_path_from_user(),
         _ => get_file_metadata(&file_path.unwrap()),
     }
 }
@@ -37,8 +37,14 @@ fn get_file_path_from_string(path: &String) -> &Path {
     return Path::new(path);
 }
 
-fn get_file_path_from_user() -> &Path {
+fn get_file_path_from_user() -> () {
     // User input??
+    let mut path = String::new();
+    println!("No file path detected, please enter file path");
+    print!(">");
+    std::io::stdin().read_line(&mut path).unwrap();
+    let p = get_file_path_from_string(&path);
+    get_file_metadata(p);
 }
 
 fn get_file_metadata(path: &Path) {
@@ -49,8 +55,11 @@ fn get_file_metadata(path: &Path) {
             // Figure out how to format date correctly
             let create_date = metadata.created().unwrap();
 
+            let idk = metadata.file_type();
+
             println!("Size: {} bytes", size);
             println!("Created: {:?}", create_date);
+            println!("System type: {:?}", idk);
         }
         Err(e) => {
             println!("Error: {}", e);
