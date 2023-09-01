@@ -17,6 +17,10 @@ struct Arguments {
     /// flag to set the program to display the file's hash checksum
     #[argh(switch, short = 'H')]
     hash: bool,
+
+    /// flag to set the program to display strings found in the file
+    #[argh(switch, short = 's')]
+    strings: bool,
 }
 
 fn main() {
@@ -42,6 +46,10 @@ fn main() {
 
     if args.hash == true {
         hash_file(file_path);
+    }
+
+    if args.strings == true {
+        get_strings(file_path);
     }
 }
 
@@ -83,4 +91,22 @@ fn hash_file(path: &Path) {
     println!("Hash: {}", hash);
 }
 
-// TODO - Extract strings and list them
+// TODO - List these out better
+fn get_strings(path: &Path) {
+    let bytes = fs::read(path).unwrap();
+
+    let strings = String::from_utf8_lossy(&bytes);
+    let valid_char = |c: char| c.is_alphanumeric() || c.is_whitespace();
+    let filtered_strings: String = strings
+        .chars()
+        .filter(|&c| valid_char(c) && c.is_ascii())
+        .collect();
+
+    println!("---Strings found in file---");
+
+    let output_file = "strings.txt";
+    match fs::write(output_file, filtered_strings.to_string()) {
+        Ok(something) => println!("output file created"),
+        Err(e) => println!("error"),
+    }
+}
