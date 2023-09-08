@@ -1,5 +1,9 @@
 use std::fs;
+use std::fs::File;
 use std::path::Path;
+
+use std::io::{Read};
+use hex::encode;
 
 use argh::FromArgs;
 
@@ -21,6 +25,10 @@ struct Arguments {
     /// flag to set the program to display strings found in the file
     #[argh(switch, short = 's')]
     strings: bool,
+
+    /// flag to retrieve a hex dump of a file
+    #[argh(switch)]
+    hex: bool,
 }
 
 const STRING_OUTPUT_PATH_DEFAULT: &str = "string_output.txt";
@@ -31,6 +39,7 @@ fn main() {
     - [x] Grab attribute data off of it
       [x]   + Size, creation date, etc.
     - [~] Hash/calculate checksum and save somewhere (idk)
+        - [~] Get hex dump
     - [ ] Extract available strings
     - [ ] Find out how to disassemble an exe lol
     - [ ] Add a console GUI
@@ -53,6 +62,19 @@ fn main() {
     if args.strings == true {
         get_strings(file_path);
     }
+
+    if args.hex {
+        get_hex_dump(file_path);
+    }
+}
+
+// TODO - Format hex with pretty output
+fn get_hex_dump(path: &Path) {
+    let mut file = File::open(path).expect("Unable to open file");
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).expect("Unable to read file");
+    let hex_dump = encode(&buffer);
+    println!("{}", hex_dump);
 }
 
 fn get_file_metadata(path: &Path) {
