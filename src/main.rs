@@ -55,6 +55,7 @@ fn main() {
     let file_path = Path::new(&args.path);
     get_file_metadata(file_path);
 
+    // Checking each argument
     if args.hash == true {
         hash_file(file_path);
     }
@@ -76,7 +77,7 @@ fn get_hex_dump(path: &Path) {
     let hex_dump = encode(&buffer);
 
     let pretty = format_hex_pretty(hex_dump);
-    println!("----\nHex dump\n----");
+    println!("---- Hex dump ----");
     println!("{}", pretty);
 }
 
@@ -164,7 +165,7 @@ fn get_strings(path: &Path) {
         .filter(|&c| valid_char(c) && c.is_ascii())
         .collect();
 
-    println!("----\nStrings found in file\n----");
+    println!("---- Strings found in file ----");
 
     match fs::write(STRING_OUTPUT_PATH_DEFAULT, filtered_strings.to_string()) {
         Ok(something) => println!("output file created"),
