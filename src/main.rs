@@ -49,7 +49,7 @@ fn main() {
 
     if args.path.is_empty() {
         eprintln!("Error: file path not provided! Use '-p' to enter in the path");
-        std::process::exit(-1);
+        std::process::exit(-69);
     }
 
     let file_path = Path::new(&args.path);
@@ -74,8 +74,42 @@ fn get_hex_dump(path: &Path) {
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).expect("Unable to read file");
     let hex_dump = encode(&buffer);
-    println!("{}", hex_dump);
+
+    let pretty = format_hex_pretty(hex_dump);
+    println!("----\nHex dump\n----");
+    println!("{}", pretty);
 }
+
+
+fn format_hex_pretty(hex_dump: String) -> String {
+    let mut formatted_hex = String::new();
+
+    let mut byte_num = 0;
+    let mut new_line = true;
+
+    for (index, c) in hex_dump.chars().enumerate() {
+        if new_line {
+            let hex_byte_num = format!("0x{:04X}: ", byte_num);
+            formatted_hex.push_str(&hex_byte_num);
+            byte_num = byte_num + 10;
+            new_line = false;
+        }
+
+        formatted_hex.push(c);
+
+        if (index + 1) % 2 == 0 {
+            formatted_hex.push(' ');
+        }
+
+        if (index + 1) % 10 == 0 {
+            formatted_hex.push('\n');
+            new_line = true;
+        }
+    }
+
+    return formatted_hex;
+}
+
 
 fn get_file_metadata(path: &Path) {
     match fs::metadata(&path) {
@@ -94,6 +128,8 @@ fn get_file_metadata(path: &Path) {
                 None => "unknown file type",
             };
 
+            println!("----\nMetadata for file: {}\n----", format!("{}", path.display()));
+
             println!("Size: {} bytes", size);
             println!("Created: {}", create_date_time.format("%d/%m/%Y %X"));
             println!(
@@ -108,12 +144,14 @@ fn get_file_metadata(path: &Path) {
     }
 }
 
+
 // TODO - Find more things to do with the hash (compare to older versions or something)
 fn hash_file(path: &Path) {
     let bytes = fs::read(path).unwrap();
     let hash = sha256::digest(&bytes);
     println!("Hash: {}", hash);
 }
+
 
 // TODO - List these out better
 fn get_strings(path: &Path) {
@@ -126,7 +164,7 @@ fn get_strings(path: &Path) {
         .filter(|&c| valid_char(c) && c.is_ascii())
         .collect();
 
-    println!("---Strings found in file---");
+    println!("----\nStrings found in file\n----");
 
     match fs::write(STRING_OUTPUT_PATH_DEFAULT, filtered_strings.to_string()) {
         Ok(something) => println!("output file created"),
